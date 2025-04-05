@@ -1,47 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CrimeMap SD</title>
-    <link rel="icon" href="assets/icon.svg">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CrimeMap SD</title>
+  <link rel="icon" href="assets/icon.svg" />
+  <link rel="stylesheet" href="styles.css" />
 
-    <link rel="stylesheet" href="styles.css">
-    <!-- Add Mapbox CSS -->
-    <link href="https://api.mapbox.com/mapbox-gl-js/v2.11.0/mapbox-gl.css" rel="stylesheet" />
-    <!-- Add Mapbox JS -->
-    <script src="https://api.mapbox.com/mapbox-gl-js/v2.11.0/mapbox-gl.js"></script>
+  <!-- Mapbox -->
+  <link href="https://api.mapbox.com/mapbox-gl-js/v2.11.0/mapbox-gl.css" rel="stylesheet" />
+  <script src="https://api.mapbox.com/mapbox-gl-js/v2.11.0/mapbox-gl.js"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
-
+  <!-- PapaParse -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
 </head>
+
 <body>
-    <header>
-        <h1>CrimeMap SD</h1>
-        <p>Visualizing San Diego Crime Data</p>
-    </header>
+  <header>
+    <h1>CrimeMap SD</h1>
+    <p>Visualizing San Diego Crime Data</p>
+  </header>
 
-    <main>
-        <section id="crime-map">
-            <h2>Live Crime Map</h2>
-            <div id="map-container">
-                <!-- Your map will go here -->
-            </div>
-        </section>
+  <main>
+    <section id="crime-map">
+        <h2>Live Crime Map</h2>
+      
+        <div id="map-wrapper">
+          <!-- Mapbox inserts its canvas here -->
+          <div id="map-container"></div>
+      
+          <!-- Center red dot and reset button stay layered above -->
+          <div id="map-center-indicator"></div>
+          <button id="reset-location">Reset to My Location</button>
+        </div>
+      </section>
+      
 
-        <section id="insights">
-            <h2>Dynamic Insights</h2>
-            <div id="insights-container">
-                <!-- Insights will go here -->
-            </div>
-        </section>
 
-        <section id="simulation">
-            <h2>Simulation Mode</h2>
-            <button id="start-simulation">Start Simulation</button>
-        </section>
-    </main>
+    <section id="insights">
+      <h2>Dynamic Insights</h2>
+      <div id="insights-container"></div>
+    </section>
 
-    <script src="script.js"></script>
+    <section id="simulation">
+      <h2>Simulation Mode</h2>
+      <button id="start-simulation">Start Simulation</button>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
 </body>
 </html>
