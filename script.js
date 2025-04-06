@@ -172,12 +172,14 @@ function initMap(centerCoords = [-117.1611, 32.7157]) {
                 console.error('Error parsing CSV:', error);
             }
         });
+        map.resize(); // 🔁 force re-measure and fill container
     });
 
     map.on('moveend', () => {
         const center = map.getCenter();
         updateMapSource(map, [center.lng, center.lat]);
         updateLocationLabels(center.lng, center.lat);
+        updateCrimeSnapshotPanel(30);
     });
 }
 
@@ -210,3 +212,149 @@ document.getElementById("reset-location").addEventListener("click", () => {
         updateLocationLabels(userLocation[0], userLocation[1]);
     }
 });
+
+function updateCrimeSnapshotPanel(days = 30) {
+    const now = new Date();
+    const cutoff = new Date();
+    cutoff.setDate(now.getDate() - days);
+
+    // ✅ clone it safely
+    const prevCutoff = new Date(cutoff);
+    prevCutoff.setDate(prevCutoff.getDate() - days);
+
+
+
+    const currentNeighborhood = document.getElementById("neighborhood").textContent.trim().toLowerCase();
+
+    // Helper to check crime against neighborhood or fallback to radius
+    function isRelevantCrime(crime, fallbackCenter, fallbackRadius = 2) {
+        const crimeNeighborhood = (crime.neighborhood || "").trim().toLowerCase();
+        const mapNeighborhood = document.getElementById("neighborhood").textContent.trim().toLowerCase();
+      
+        // If the map neighborhood is valid and matches the crime
+        if (
+          mapNeighborhood &&
+          mapNeighborhood !== "unavailable" &&
+          crimeNeighborhood &&
+          crimeNeighborhood === mapNeighborhood
+        ) {
+          return true;
+        }
+      
+        // Otherwise, fall back to distance check
+        return getDistanceKm(fallbackCenter[1], fallbackCenter[0], crime.latitude, crime.longitude) <= fallbackRadius;
+      }
+
+      const center = window.currentMap.getCenter();
+      const centerCoords = [center.lng, center.lat];
+      
+      const radiusKm = 2;
+      
+      const currentCrimes = allCrimeData.filter(c =>
+        new Date(c.occurred_on) >= cutoff &&
+        isRelevantCrime(c, centerCoords)
+      );
+      
+      const prevCrimes = allCrimeData.filter(c =>
+        new Date(c.occurred_on) >= prevCutoff &&
+        new Date(c.occurred_on) < cutoff &&
+        isRelevantCrime(c, centerCoords)
+      );
+      
+
+    // Most common crime
+    const crimeTypes = {};
+    currentCrimes.forEach(c => {
+        const type = c.pd_offense_category || "Unknown";
+        crimeTypes[type] = (crimeTypes[type] || 0) + 1;
+    });
+    const common = Object.entries(crimeTypes).sort((a, b) => b[1] - a[1])[0]?.[0] || 'None';
+    document.getElementById("common-crime").textContent = common;
+
+    // Top 3 streets
+    const streetCounts = {};
+    currentCrimes.forEach(c => {
+        const street = c.block_addr || "Unknown";
+        streetCounts[street] = (streetCounts[street] || 0) + 1;
+    });
+    const topStreets = Object.entries(streetCounts)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 3)
+        .map(([s]) => s);
+    document.getElementById("hotspot-streets").textContent = topStreets.join(', ');
+
+    // % change
+    let percent;
+    let trendText = '';
+    let trendBox = document.getElementById("trend-box");
+
+    if (prevCrimes.length === 0 && currentCrimes.length > 0) {
+        percent = 100;
+        trendText = `▲ ${currentCrimes.length} new crimes (no data last period)`;
+        trendBox.className = 'trend-box positive';
+    } else if (prevCrimes.length === 0 && currentCrimes.length === 0) {
+        percent = 0;
+        trendText = `No crimes in either period`;
+        trendBox.className = '';
+    } else {
+        const change = currentCrimes.length - prevCrimes.length;
+        percent = Math.round((change / prevCrimes.length) * 100);
+        const sign = percent >= 0 ? '▲' : '▼';
+        trendText = `${sign} ${Math.abs(percent)}% from previous period`;
+        trendBox.className = percent >= 0 ? 'trend-box positive' : 'trend-box negative';
+    }
+
+    trendBox.textContent = trendText;
+
+    console.log("cutoff:", cutoff);
+console.log("prevCutoff:", prevCutoff);
+console.log("Current date:", now);
+
+console.log("Total crimes in CSV:", allCrimeData.length);
+
+const debugSample = allCrimeData.filter(c => {
+  const date = new Date(c.occurred_on);
+  return !isNaN(date) && date >= prevCutoff && date < cutoff;
+});
+console.log("Crimes in previous period (before location filtering):", debugSample.length);
+
+
+    // Bar chart by hour
+    const hourCounts = Array(24).fill(0);
+    currentCrimes.forEach(c => {
+        const hour = new Date(c.occurred_on).getHours();
+        hourCounts[hour]++;
+    });
+
+    const currentHour = now.getHours();
+
+    if (window.hourChart) window.hourChart.destroy();
+
+    const ctx = document.getElementById("crime-hour-chart").getContext("2d");
+    window.hourChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: [...Array(24).keys()].map(h => `${h}:00`),
+            datasets: [{
+                label: 'Crimes by Hour',
+                data: hourCounts,
+                backgroundColor: hourCounts.map((_, i) => i === currentHour ? '#ff4d4f' : '#36a2eb')
+            }]
+        },
+        options: {
+            scales: {
+                y: { beginAtZero: true }
+            },
+            plugins: {
+                legend: { display: false }
+            }
+        }
+    });
+}
+
+  
+  document.getElementById("snapshot-range").addEventListener("change", (e) => {
+    updateCrimeSnapshotPanel(parseInt(e.target.value));
+  });
+  
+  

@@ -20,7 +20,7 @@ main {
   flex-wrap: wrap;
   justify-content: space-between;
   background-color: #f4f4f4;
-  padding: 0.75rem 1rem;
+  padding: 0.5rem 0.5rem;
   border: 1px solid #ccc;
   font-size: 0.95rem;
   border-radius: 6px;
@@ -34,24 +34,6 @@ main {
   margin-bottom: 1rem;
 }
 
-#crime-snapshot {
-  flex: 1;
-  background: #fafafa;
-  padding: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 0.9rem;
-  min-width: 250px;
-}
-
-#crime-snapshot h3 {
-  margin-top: 0;
-}
-
-#crime-snapshot ul {
-  list-style: disc;
-  padding-left: 1.2rem;
-}
 
 #map-section {
   flex: 3;
@@ -60,7 +42,7 @@ main {
 
 #map-wrapper {
   position: relative;
-  height: 500px;
+  height: calc(100vh - 200px); /* adjust offset as needed */
   width: 100%;
 }
 
@@ -122,20 +104,76 @@ main {
   box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
-/* Prediction panel */
-#prediction-panel {
-  background-color: #f0f8ff;
+#crime-snapshot {
+  flex: 1;
+  background: #fafafa;
   padding: 1rem;
-  border: 1px solid #bcd;
+  border: 1px solid #ddd;
   border-radius: 6px;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
+  min-width: 250px;
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
-#prediction-panel ul {
-  list-style: none;
-  padding-left: 0;
+#crime-snapshot h3 {
+  margin-top: 0;
 }
 
-#prediction-panel li {
-  margin-bottom: 0.5rem;
+#crime-snapshot ul {
+  list-style: disc;
+  padding-left: 1.2rem;
+}
+
+.snapshot-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+  flex: 1;
+}
+
+.snapshot-row {
+  display: flex;
+  gap: 1rem;
+}
+
+.snapshot-box {
+  flex: 1;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1rem;
+  background: #fafafa;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.snapshot-box h4 {
+  margin: 0 0 0.5rem 0;
+}
+
+#crime-hour-chart {
+  height: 200px !important;
+  width: 100% !important;
+}
+
+.trend-box.negative {
+  background-color: #d4edda;
+  color: #155724;
+  padding: 4px 8px;
+  border-radius: 5px;
+  font-weight: bold;
+  display: inline-block;
+}
+
+.trend-box.positive {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 4px 8px;
+  border-radius: 5px;
+  font-weight: bold;
+  display: inline-block;
 }

@@ -13,12 +13,13 @@
 
   <!-- PapaParse -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
   <header>
     <h1>CrimeMap SD</h1>
-    <p>Visualizing San Diego Crime Data</p>
   </header>
 
   <main>
@@ -33,10 +34,37 @@
     <div id="main-layout">
       <!-- LEFT: Snapshot -->
       <aside id="crime-snapshot">
-        <h3>📊 Crime Snapshot (Past 30 Days)</h3>
-        <ul id="top-crimes">
-          <li>Loading...</li>
-        </ul>
+          <h3>📊 Crime Snapshot</h3>
+        
+          <label for="snapshot-range"><strong>View:</strong></label>
+          <select id="snapshot-range">
+            <option value="30">Last 1 Month</option>
+            <option value="90">Last 3 Months</option>
+          </select>
+
+          <div class="snapshot-grid">
+            <div class="snapshot-row">
+              <div class="snapshot-box">
+                <h4>Most Common Crime</h4>
+                <p id="common-crime">Loading...</p>
+              </div>
+
+              <div class="snapshot-box">
+                <h4>Crime Trend</h4>
+                <p id="trend-box" class="trend-box">Loading...</p>
+              </div>
+            </div>
+
+            <div class="snapshot-box">
+              <h4>Suggested Patrol Zones</h4>
+              <p id="hotspot-streets">Loading...</p>
+            </div>
+
+            <div class="snapshot-box">
+              <h4>Crime by Hour</h4>
+              <canvas id="crime-hour-chart"></canvas>
+            </div>
+          </div>
       </aside>
 
       <!-- CENTER: Map -->
@@ -49,15 +77,6 @@
       </section>
     </div>
 
-    <!-- BOTTOM: Predictions -->
-    <section id="prediction-panel">
-      <h3>🔮 Predictive Analytics (Next 12 Hours)</h3>
-      <ul>
-        <li><strong>Most likely crime:</strong> <span id="likely-crime">Loading...</span></li>
-        <li><strong>Risk peak:</strong> <span id="risk-peak">Loading...</span></li>
-        <li><strong>Suggested patrol zones:</strong> <span id="suggested-zones">Loading...</span></li>
-      </ul>
-    </section>
   </main>
 
   <script src="script.js"></script>
