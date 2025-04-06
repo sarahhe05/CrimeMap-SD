@@ -22,23 +22,44 @@
   </header>
 
   <main>
-    <section id="crime-map">
-      <h2>Live Crime Map</h2>
-      <div id="map-wrapper">
-        <div id="map-container"></div>
-        <div id="map-center-indicator"></div>
-        <button id="reset-location">Reset to My Location</button>
-      </div>
-    </section>
+    <!-- TOP BAR -->
+    <div id="top-bar">
+      <div><strong>Neighborhood:</strong> <span id="neighborhood">Loading...</span></div>
+      <div><strong>Street:</strong> <span id="street">Loading...</span></div>
+      <div><strong>Time:</strong> <span id="current-time">Loading...</span></div>
+    </div>
 
-    <section id="insights">
-      <h2>Dynamic Insights</h2>
-      <div id="insights-container"></div>
-    </section>
+    <!-- MAIN LAYOUT -->
+    <div id="main-layout">
+      <!-- LEFT: Snapshot -->
+      <aside id="crime-snapshot">
+        <h3>📊 Crime Snapshot (Past 30 Days)</h3>
+        <ul id="top-crimes">
+          <li>Loading...</li>
+        </ul>
+      </aside>
 
+      <!-- CENTER: Map -->
+      <section id="map-section">
+        <div id="map-wrapper">
+          <div id="map-container"></div>
+          <div id="map-center-indicator"></div>
+          <button id="reset-location">Reset to My Location</button>
+        </div>
+      </section>
+    </div>
+
+    <!-- BOTTOM: Predictions -->
+    <section id="prediction-panel">
+      <h3>🔮 Predictive Analytics (Next 12 Hours)</h3>
+      <ul>
+        <li><strong>Most likely crime:</strong> <span id="likely-crime">Loading...</span></li>
+        <li><strong>Risk peak:</strong> <span id="risk-peak">Loading...</span></li>
+        <li><strong>Suggested patrol zones:</strong> <span id="suggested-zones">Loading...</span></li>
+      </ul>
+    </section>
   </main>
 
-  <!-- ✅ JavaScript must load AFTER elements are in the DOM -->
   <script src="script.js"></script>
 </body>
 </html>

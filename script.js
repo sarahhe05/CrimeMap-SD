@@ -1,5 +1,6 @@
 mapboxgl.accessToken = 'pk.eyJ1Ijoic2FyYWhoZTA1IiwiYSI6ImNtN2NxdDR2djA3OTIycnB0OXNyenRmaW8ifQ.MIoVxDMYrSy-nm4YY2K-3A';
 
+const MAPBOX_GEOCODING_URL = 'https://api.mapbox.com/geocoding/v5/mapbox.places/';
 const EARTH_RADIUS_KM = 6371;
 let allCrimeData = [];
 let userLocation = null;
@@ -28,7 +29,9 @@ function toGeoJSON(crimes) {
             type: 'Feature',
             properties: {
                 pd_offense_category: crime.pd_offense_category || "Unknown",
-                code_section: crime.code_section || "N/A"
+                code_section: (crime.code_section || "N/A").replace(/\|\|$/, ''),
+                occurred_on: crime.occurred_on || "Date Unknown",
+                block_addr: crime.block_addr || "Address not available"
             },
             geometry: {
                 type: 'Point',
@@ -46,12 +49,51 @@ function updateMapSource(map, centerCoords) {
     }
 }
 
+function updateCurrentTime() {
+    const now = new Date();
+    const timeStr = now.toLocaleString();
+    const timeElement = document.getElementById("current-time");
+    if (timeElement) timeElement.textContent = timeStr;
+}
+setInterval(updateCurrentTime, 1000);
+updateCurrentTime();
+
+function updateLocationLabels(lng, lat) {
+    const url = `${MAPBOX_GEOCODING_URL}${lng},${lat}.json?access_token=${mapboxgl.accessToken}`;
+
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            const features = data.features;
+
+            let neighborhood = 'Unavailable';
+            let street = 'Unavailable';
+
+            for (const feature of features) {
+                if (feature.place_type.includes('neighborhood')) {
+                    neighborhood = feature.text;
+                }
+                if (feature.place_type.includes('address') || feature.place_type.includes('street')) {
+                    street = feature.place_name;
+                }
+            }
+
+            document.getElementById('neighborhood').textContent = neighborhood;
+            document.getElementById('street').textContent = street;
+        })
+        .catch(error => {
+            console.error('Geocoding failed:', error);
+            document.getElementById('neighborhood').textContent = 'Error';
+            document.getElementById('street').textContent = 'Error';
+        });
+}
+
 function initMap(centerCoords = [-117.1611, 32.7157]) {
     const map = new mapboxgl.Map({
         container: 'map-container',
         style: 'mapbox://styles/mapbox/streets-v11',
         center: centerCoords,
-        zoom: 15
+        zoom: 17
     });
 
     window.currentMap = map;
@@ -68,13 +110,13 @@ function initMap(centerCoords = [-117.1611, 32.7157]) {
             dynamicTyping: true,
             complete: function (results) {
                 const currentDate = new Date();
-                const sixMonthsAgo = new Date();
-                sixMonthsAgo.setMonth(currentDate.getMonth() - 6);
+                const aYearAgo = new Date();
+                aYearAgo.setMonth(currentDate.getMonth() - 12);
 
                 allCrimeData = results.data.filter(crime => {
                     const occurredOn = new Date(crime.occurred_on);
                     const hasValidCoords = !isNaN(crime.latitude) && !isNaN(crime.longitude);
-                    return occurredOn >= sixMonthsAgo && hasValidCoords;
+                    return occurredOn >= aYearAgo && hasValidCoords;
                 });
 
                 map.addSource('crimes', {
@@ -94,6 +136,7 @@ function initMap(centerCoords = [-117.1611, 32.7157]) {
                 });
 
                 updateMapSource(map, centerCoords);
+                updateLocationLabels(centerCoords[0], centerCoords[1]);
 
                 // === Tooltip on hover ===
                 const popup = new mapboxgl.Popup({
@@ -105,11 +148,13 @@ function initMap(centerCoords = [-117.1611, 32.7157]) {
                     map.getCanvas().style.cursor = 'pointer';
 
                     const feature = e.features[0];
-                    const { pd_offense_category, code_section } = feature.properties;
+                    const { pd_offense_category, code_section, occurred_on, block_addr } = feature.properties;
 
                     const html = `
                         <strong>Category:</strong> ${pd_offense_category}<br>
-                        <strong>Code:</strong> ${code_section}
+                        <strong>Code:</strong> ${code_section}<br>
+                        <strong>Occurred on:</strong> ${occurred_on}<br>
+                        <strong>Address:</strong> ${block_addr}
                     `;
 
                     popup
@@ -132,6 +177,7 @@ function initMap(centerCoords = [-117.1611, 32.7157]) {
     map.on('moveend', () => {
         const center = map.getCenter();
         updateMapSource(map, [center.lng, center.lat]);
+        updateLocationLabels(center.lng, center.lat);
     });
 }
 
@@ -158,8 +204,9 @@ document.getElementById("reset-location").addEventListener("click", () => {
     if (userLocation && window.currentMap) {
         window.currentMap.flyTo({
             center: userLocation,
-            zoom: 15,
+            zoom: 17,
             essential: true
         });
+        updateLocationLabels(userLocation[0], userLocation[1]);
     }
 });
