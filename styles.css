@@ -7,7 +7,7 @@ body {
 header {
   background-color: #333;
   color: white;
-  padding: 1rem;
+  padding: 0.1rem;
   text-align: center;
 }
 
@@ -20,7 +20,7 @@ main {
   flex-wrap: wrap;
   justify-content: space-between;
   background-color: #f4f4f4;
-  padding: 0.5rem 0.5rem;
+  padding: 0.5rem;
   border: 1px solid #ccc;
   font-size: 0.95rem;
   border-radius: 6px;
@@ -29,20 +29,26 @@ main {
 
 #main-layout {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 1rem;
-  margin-bottom: 1rem;
+  height: calc(100vh - 10rem);
 }
 
+#map-section, #crime-snapshot {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
 
+/* === MAP === */
 #map-section {
   flex: 3;
   min-width: 300px;
 }
 
 #map-wrapper {
+  flex: 1;
   position: relative;
-  height: calc(100vh - 200px); /* adjust offset as needed */
   width: 100%;
 }
 
@@ -53,7 +59,6 @@ main {
   border-radius: 6px;
 }
 
-/* Plus sign marker at center */
 #map-center-indicator {
   position: absolute;
   top: 50%;
@@ -88,7 +93,6 @@ main {
   transform: translateX(-50%);
 }
 
-/* Reset button */
 #reset-location {
   position: absolute;
   top: 15px;
@@ -104,51 +108,63 @@ main {
   box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
+/* === SNAPSHOT PANEL === */
 #crime-snapshot {
   flex: 1;
   background: #fafafa;
-  padding: 1rem;
+  padding: 0.75rem;
   border: 1px solid #ddd;
   border-radius: 6px;
   font-size: 0.9rem;
   min-width: 250px;
-  margin-top: 1rem;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 #crime-snapshot h3 {
   margin-top: 0;
 }
 
-#crime-snapshot ul {
-  list-style: disc;
-  padding-left: 1.2rem;
+.snapshot-grid {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+  overflow: hidden;
 }
 
-.snapshot-grid {
+.snapshot-top {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  margin-top: 1rem;
-  flex: 1;
 }
 
 .snapshot-row {
   display: flex;
   gap: 1rem;
+  flex: 1;
+  align-items: stretch;
+}
+
+.snapshot-chart {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .snapshot-box {
-  flex: 1;
+  flex: 1 1 auto;
   border: 1px solid #ddd;
   border-radius: 8px;
-  padding: 1rem;
+  padding: 0.75rem;
   background: #fafafa;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .snapshot-box h4 {
@@ -156,22 +172,26 @@ main {
 }
 
 #crime-hour-chart {
-  height: 200px !important;
-  width: 100% !important;
+  width: 100%;
+  height: 100%;
+  max-height: 100%;
+  padding-inline: 0.5rem;
+  box-sizing: border-box;
+  object-fit: contain;
 }
 
-.trend-box.negative {
-  background-color: #d4edda;
-  color: #155724;
+.trend-box.positive {
+  background-color: #f8d7da;
+  color: #721c24;
   padding: 4px 8px;
   border-radius: 5px;
   font-weight: bold;
   display: inline-block;
 }
 
-.trend-box.positive {
-  background-color: #f8d7da;
-  color: #721c24;
+.trend-box.negative {
+  background-color: #d4edda;
+  color: #155724;
   padding: 4px 8px;
   border-radius: 5px;
   font-weight: bold;

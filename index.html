@@ -14,6 +14,7 @@
   <!-- PapaParse -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
 
+  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
@@ -34,40 +35,41 @@
     <div id="main-layout">
       <!-- LEFT: Snapshot -->
       <aside id="crime-snapshot">
-          <h3>📊 Crime Snapshot</h3>
-        
-          <label for="snapshot-range"><strong>View:</strong></label>
-          <select id="snapshot-range">
-            <option value="30">Last 1 Month</option>
-            <option value="90">Last 3 Months</option>
-          </select>
+        <h3>📊 Crime Snapshot</h3>
+        <label for="snapshot-range"><strong>View:</strong></label>
+        <select id="snapshot-range">
+          <option value="30">Last 1 Month</option>
+          <option value="90">Last 3 Months</option>
+        </select>
 
-          <div class="snapshot-grid">
+        <div class="snapshot-grid">
+          <div class="snapshot-top">
             <div class="snapshot-row">
               <div class="snapshot-box">
                 <h4>Most Common Crime</h4>
                 <p id="common-crime">Loading...</p>
               </div>
-
               <div class="snapshot-box">
                 <h4>Crime Trend</h4>
                 <p id="trend-box" class="trend-box">Loading...</p>
               </div>
             </div>
-
             <div class="snapshot-box">
               <h4>Suggested Patrol Zones</h4>
               <p id="hotspot-streets">Loading...</p>
             </div>
+          </div>
 
+          <div class="snapshot-chart">
             <div class="snapshot-box">
               <h4>Crime by Hour</h4>
               <canvas id="crime-hour-chart"></canvas>
             </div>
           </div>
+        </div>
       </aside>
 
-      <!-- CENTER: Map -->
+      <!-- RIGHT: Map -->
       <section id="map-section">
         <div id="map-wrapper">
           <div id="map-container"></div>
@@ -76,7 +78,6 @@
         </div>
       </section>
     </div>
-
   </main>
 
   <script src="script.js"></script>
