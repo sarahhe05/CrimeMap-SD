@@ -98,11 +98,10 @@ function initMap(centerCoords = [-117.1611, 32.7157]) {
 
     window.currentMap = map;
 
-    window.userMarker = new mapboxgl.Marker({ color: "#2ecc71" })
+    new mapboxgl.Marker({ color: "#2ecc71" })
         .setLngLat(centerCoords)
         .setPopup(new mapboxgl.Popup().setText("You are here!"))
         .addTo(map);
-
 
     map.on('load', () => {
         Papa.parse('cleaned_crime_data.csv', {
@@ -185,34 +184,24 @@ function initMap(centerCoords = [-117.1611, 32.7157]) {
 }
 
 if (navigator.geolocation) {
-    navigator.geolocation.watchPosition(
-      (position) => {
-        const userCoords = [position.coords.longitude, position.coords.latitude];
-  
-        if (!window.mapInitialized) {
-          userLocation = userCoords;
-          initMap(userCoords);
-          window.mapInitialized = true;
+    navigator.geolocation.getCurrentPosition(
+        (position) => {
+            const userCoords = [position.coords.longitude, position.coords.latitude];
+            userLocation = userCoords;
+            initMap(userCoords);
+        },
+        (error) => {
+            console.warn('Geolocation failed. Using default location.');
+            userLocation = [-117.1611, 32.7157];
+            initMap();
         }
-  
-        // Update user marker if already added
-        if (window.userMarker) {
-          window.userMarker.setLngLat(userCoords);
-        }
-      },
-      (error) => {
-        console.warn('Geolocation failed. Using default location.');
-        userLocation = [-117.1611, 32.7157];
-        initMap();
-      },
-      {
-        enableHighAccuracy: true,
-        maximumAge: 10000,
-        timeout: 10000
-      }
     );
-  }
-  
+} else {
+    console.warn('Geolocation not supported.');
+    userLocation = [-117.1611, 32.7157];
+    initMap();
+}
+
 document.getElementById("reset-location").addEventListener("click", () => {
     if (userLocation && window.currentMap) {
         window.currentMap.flyTo({
@@ -316,6 +305,12 @@ function updateCrimeSnapshotPanel(days = 30) {
     }
 
     trendBox.textContent = trendText;
+
+    console.log("cutoff:", cutoff);
+console.log("prevCutoff:", prevCutoff);
+console.log("Current date:", now);
+
+console.log("Total crimes in CSV:", allCrimeData.length);
 
 const debugSample = allCrimeData.filter(c => {
   const date = new Date(c.occurred_on);
