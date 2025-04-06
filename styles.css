@@ -17,8 +17,8 @@ body {
   
   #map-wrapper {
     position: relative;
-    width: 100%;
     height: 500px;
+    width: 100%;
   }
   
   #map-container {
@@ -26,6 +26,7 @@ body {
     height: 100%;
   }
   
+  /* Plus sign marker at center */
   #map-center-indicator {
     position: absolute;
     top: 50%;
@@ -41,7 +42,7 @@ body {
   #map-center-indicator::after {
     content: '';
     position: absolute;
-    background-color: #00BFFF; /* Distinct color: DeepSkyBlue */
+    background-color: #00BFFF; /* DeepSkyBlue */
   }
   
   #map-center-indicator::before {

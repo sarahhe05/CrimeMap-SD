@@ -23,31 +23,22 @@
 
   <main>
     <section id="crime-map">
-        <h2>Live Crime Map</h2>
-      
-        <div id="map-wrapper">
-          <!-- Mapbox inserts its canvas here -->
-          <div id="map-container"></div>
-      
-          <!-- Center red dot and reset button stay layered above -->
-          <div id="map-center-indicator"></div>
-          <button id="reset-location">Reset to My Location</button>
-        </div>
-      </section>
-      
-
+      <h2>Live Crime Map</h2>
+      <div id="map-wrapper">
+        <div id="map-container"></div>
+        <div id="map-center-indicator"></div>
+        <button id="reset-location">Reset to My Location</button>
+      </div>
+    </section>
 
     <section id="insights">
       <h2>Dynamic Insights</h2>
       <div id="insights-container"></div>
     </section>
 
-    <section id="simulation">
-      <h2>Simulation Mode</h2>
-      <button id="start-simulation">Start Simulation</button>
-    </section>
   </main>
 
+  <!-- ✅ JavaScript must load AFTER elements are in the DOM -->
   <script src="script.js"></script>
 </body>
 </html>

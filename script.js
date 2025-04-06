@@ -1,16 +1,9 @@
-// Placeholder for initializing map, insights, and simulation
-document.getElementById("start-simulation").addEventListener("click", function() {
-    alert("Simulation mode is under development.");
-});
-
-// Replace with your own Mapbox access token
 mapboxgl.accessToken = 'pk.eyJ1Ijoic2FyYWhoZTA1IiwiYSI6ImNtN2NxdDR2djA3OTIycnB0OXNyenRmaW8ifQ.MIoVxDMYrSy-nm4YY2K-3A';
 
 const EARTH_RADIUS_KM = 6371;
-let allCrimeData = []; // Full dataset in memory
-let userLocation = null; // Store user's initial location
+let allCrimeData = [];
+let userLocation = null;
 
-// Haversine formula
 function getDistanceKm(lat1, lon1, lat2, lon2) {
     const dLat = (lat2 - lat1) * Math.PI / 180;
     const dLon = (lon2 - lon1) * Math.PI / 180;
@@ -33,7 +26,10 @@ function toGeoJSON(crimes) {
         type: 'FeatureCollection',
         features: crimes.map(crime => ({
             type: 'Feature',
-            properties: {},
+            properties: {
+                pd_offense_category: crime.pd_offense_category || "Unknown",
+                code_section: crime.code_section || "N/A"
+            },
             geometry: {
                 type: 'Point',
                 coordinates: [crime.longitude, crime.latitude]
@@ -58,7 +54,7 @@ function initMap(centerCoords = [-117.1611, 32.7157]) {
         zoom: 15
     });
 
-    window.currentMap = map; // So reset button can access it
+    window.currentMap = map;
 
     new mapboxgl.Marker({ color: "#2ecc71" })
         .setLngLat(centerCoords)
@@ -83,7 +79,7 @@ function initMap(centerCoords = [-117.1611, 32.7157]) {
 
                 map.addSource('crimes', {
                     type: 'geojson',
-                    data: toGeoJSON([]) // start empty
+                    data: toGeoJSON([])
                 });
 
                 map.addLayer({
@@ -98,6 +94,34 @@ function initMap(centerCoords = [-117.1611, 32.7157]) {
                 });
 
                 updateMapSource(map, centerCoords);
+
+                // === Tooltip on hover ===
+                const popup = new mapboxgl.Popup({
+                    closeButton: false,
+                    closeOnClick: false
+                });
+
+                map.on('mouseenter', 'nearby-points', (e) => {
+                    map.getCanvas().style.cursor = 'pointer';
+
+                    const feature = e.features[0];
+                    const { pd_offense_category, code_section } = feature.properties;
+
+                    const html = `
+                        <strong>Category:</strong> ${pd_offense_category}<br>
+                        <strong>Code:</strong> ${code_section}
+                    `;
+
+                    popup
+                        .setLngLat(e.lngLat)
+                        .setHTML(html)
+                        .addTo(map);
+                });
+
+                map.on('mouseleave', 'nearby-points', () => {
+                    map.getCanvas().style.cursor = '';
+                    popup.remove();
+                });
             },
             error: function (error) {
                 console.error('Error parsing CSV:', error);
@@ -105,14 +129,12 @@ function initMap(centerCoords = [-117.1611, 32.7157]) {
         });
     });
 
-    // Update nearby crimes whenever the map stops moving
     map.on('moveend', () => {
         const center = map.getCenter();
         updateMapSource(map, [center.lng, center.lat]);
     });
 }
 
-// Get user location and initialize map
 if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -132,7 +154,6 @@ if (navigator.geolocation) {
     initMap();
 }
 
-// Reset map to original location
 document.getElementById("reset-location").addEventListener("click", () => {
     if (userLocation && window.currentMap) {
         window.currentMap.flyTo({
