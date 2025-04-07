@@ -1,56 +1,84 @@
 mapboxgl.accessToken = 'pk.eyJ1Ijoic2FyYWhoZTA1IiwiYSI6ImNtN2NxdDR2djA3OTIycnB0OXNyenRmaW8ifQ.MIoVxDMYrSy-nm4YY2K-3A';
 
+let tooltipBound = false;
+
+function setupCrimeTooltip(map) {
+  if (tooltipBound) return;
+  tooltipBound = true;
+
+  const popup = new mapboxgl.Popup({
+    closeButton: false,
+    closeOnClick: false
+  });
+
+  map.on('mouseenter', 'nearby-points', (e) => {
+    map.getCanvas().style.cursor = 'pointer';
+    const { pd_offense_category, code_section, occurred_on, block_addr } = e.features[0].properties;
+    popup.setLngLat(e.lngLat).setHTML(`
+      <strong>Category:</strong> ${pd_offense_category}<br>
+      <strong>Code:</strong> ${code_section}<br>
+      <strong>Occurred on:</strong> ${occurred_on}<br>
+      <strong>Address:</strong> ${block_addr}
+    `).addTo(map);
+  });
+
+  map.on('mouseleave', 'nearby-points', () => {
+    map.getCanvas().style.cursor = '';
+    popup.remove();
+  });
+}
+
 const toggle = document.getElementById('mode-toggle');
 toggle.addEventListener('change', () => {
   const isDark = toggle.checked;
   document.body.classList.toggle('dark-mode', isDark);
 
-  if (window.currentMap) {
-    const styleUrl = isDark
-      ? 'mapbox://styles/mapbox/navigation-night-v1'
-      : 'mapbox://styles/mapbox/navigation-day-v1';
+  if (!window.currentMap) return;
 
-    const center = window.currentMap.getCenter();
-    const zoom = window.currentMap.getZoom();
+  const styleUrl = isDark
+    ? 'mapbox://styles/mapbox/navigation-night-v1'
+    : 'mapbox://styles/mapbox/navigation-day-v1';
 
-    window.currentMap.setStyle(styleUrl);
+  const center = window.currentMap.getCenter();
 
-    window.currentMap.once('styledata', () => {
-      window.currentMap.on('idle', () => removeTrafficLayers(window.currentMap));
+  window.currentMap.setStyle(styleUrl);
 
-      window.currentMap.addSource('crimes', {
-        type: 'geojson',
-        data: toGeoJSON(filterCrimes([center.lng, center.lat]))
-      });
+  window.currentMap.once('styledata', () => {
+    window.currentMap.on('idle', () => removeTrafficLayers(window.currentMap));
 
-      window.currentMap.addLayer({
-        id: 'nearby-points',
-        type: 'circle',
-        source: 'crimes',
-        paint: {
-          'circle-color': '#FF0000',
-          'circle-radius': 6,
-          'circle-opacity': 0.65
-        }
-      });
-
-      updateLocationLabels(center.lng, center.lat);
-      updateCrimeSnapshotPanel(parseInt(document.getElementById("snapshot-range").value));
+    window.currentMap.addSource('crimes', {
+      type: 'geojson',
+      data: toGeoJSON(filterCrimes([center.lng, center.lat]))
     });
-  }
+
+    window.currentMap.addLayer({
+      id: 'nearby-points',
+      type: 'circle',
+      source: 'crimes',
+      paint: {
+        'circle-color': '#FF0000',
+        'circle-radius': 6,
+        'circle-opacity': 0.65
+      }
+    });
+
+    setupCrimeTooltip(window.currentMap);
+
+    updateLocationLabels(center.lng, center.lat);
+    updateCrimeSnapshotPanel(parseInt(document.getElementById("snapshot-range").value));
+  });
 });
 
 function removeTrafficLayers(map) {
-  const allLayers = map.getStyle().layers;
-
-  allLayers.forEach(layer => {
+  const layers = map.getStyle().layers;
+  layers.forEach(layer => {
+    const paint = layer.paint || {};
     if (
       layer.type === 'line' &&
-      layer.paint &&
-      layer.paint['line-color'] &&
+      paint['line-color'] &&
       /traffic/i.test(layer.id)
     ) {
-      map.setPaintProperty(layer.id, 'line-opacity', 0); // Hide just the color
+      map.setPaintProperty(layer.id, 'line-opacity', 0);
     }
   });
 }
@@ -234,9 +262,7 @@ function initMap(centerCoords = [-117.1611, 32.7157]) {
   map.on('zoomstart', () => followUser = false);
 
   map.on('load', () => {
-
     removeTrafficLayers(map);
-  
 
     Papa.parse('cleaned_crime_data.csv', {
       download: true,
@@ -266,6 +292,8 @@ function initMap(centerCoords = [-117.1611, 32.7157]) {
             'circle-opacity': 0.65
           }
         });
+
+        setupCrimeTooltip(map);
 
         updateMapSource(map, centerCoords);
         updateLocationLabels(centerCoords[0], centerCoords[1]);
