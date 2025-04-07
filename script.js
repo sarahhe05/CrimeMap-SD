@@ -1,3 +1,8 @@
+const toggle = document.getElementById('mode-toggle');
+  toggle.addEventListener('change', () => {
+    document.body.classList.toggle('dark-mode', toggle.checked);
+  });
+
 mapboxgl.accessToken = 'pk.eyJ1Ijoic2FyYWhoZTA1IiwiYSI6ImNtN2NxdDR2djA3OTIycnB0OXNyenRmaW8ifQ.MIoVxDMYrSy-nm4YY2K-3A';
 
 const MAPBOX_GEOCODING_URL = 'https://api.mapbox.com/geocoding/v5/mapbox.places/';
@@ -102,7 +107,7 @@ function updateCrimeSnapshotPanel(days = 30) {
   // Most common crime
   const crimeTypes = {};
   currentCrimes.forEach(c => {
-    const type = c.pd_offense_category || "Unknown";
+    const type = c.code_section || "Unknown";
     crimeTypes[type] = (crimeTypes[type] || 0) + 1;
   });
   const common = Object.entries(crimeTypes).sort((a, b) => b[1] - a[1])[0]?.[0] || 'None';
@@ -158,8 +163,10 @@ function updateCrimeSnapshotPanel(days = 30) {
       datasets: [{
         label: 'Crimes by Hour',
         data: hourCounts,
-        backgroundColor: hourCounts.map((_, i) => i === currentHour ? '#ff4d4f' : '#36a2eb')
-      }]
+        backgroundColor: hourCounts.map((_, i) =>
+            i === currentHour ? '#a052d3' : '#36a2eb' // 🟣 Purple for current, 🔵 Blue for others
+          )
+        }]
     },
     options: {
       scales: { y: { beginAtZero: true } },
@@ -226,7 +233,8 @@ function initMap(centerCoords = [-117.1611, 32.7157]) {
 
   window.currentMap = map;
 
-  window.userMarker = new mapboxgl.Marker({ color: "#2ecc71" })
+    window.userMarker = new mapboxgl.Marker({ color: '#a052d3' }) // 🟣
+
     .setLngLat(centerCoords)
     .setPopup(new mapboxgl.Popup().setText("You are here!"))
     .addTo(map);
@@ -260,7 +268,7 @@ function initMap(centerCoords = [-117.1611, 32.7157]) {
           paint: {
             'circle-color': '#FF0000',
             'circle-radius': 6,
-            'circle-opacity': 0.7
+            'circle-opacity': 0.65
           }
         });
 
