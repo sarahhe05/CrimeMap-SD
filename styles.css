@@ -353,3 +353,78 @@ body.dark-mode .mapboxgl-popup-content {
   background-color: #1e1e1e; /* dark background */
   color: #f0f0f0; /* light text */
 }
+
+/* === ROUTE SIDEBAR === */
+#map-route-wrapper {
+  display: flex;
+  height: 100%;
+}
+
+#route-sidebar {
+  width: 320px;
+  background-color: #ffffff;
+  color: #000000;
+  padding: 1rem;
+  overflow-y: auto;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s, color 0.3s;
+  z-index: 5;
+}
+
+#geocoder-container {
+  margin-bottom: 1.5rem;
+}
+
+.geocoder {
+  margin-bottom: 0.75rem;
+}
+
+#route-insights h3 {
+  margin-top: 0;
+}
+
+/* === DARK MODE ROUTE SIDEBAR === */
+body.dark-mode #route-sidebar {
+  background-color: #1e1e1e;
+  color: #f0f0f0;
+}
+
+body.dark-mode .mapboxgl-ctrl-geocoder input {
+  background-color: #2a2a2a;
+  color: #ffffff;
+  border-color: #444;
+}
+
+body.dark-mode .mapboxgl-ctrl-geocoder .suggestions {
+  background-color: #2a2a2a;
+  color: #ffffff;
+}
+
+body.dark-mode .mapboxgl-ctrl-geocoder .suggestions li {
+  color: #ffffff;
+}
+
+body.dark-mode #route-insights p {
+  color: #cccccc;
+}
+
+.geocoder-with-button {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+#use-current-location {
+  padding: 6px 10px;
+  background-color: #a052d3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+#use-current-location:hover {
+  background-color: #8a3ec1;
+}
