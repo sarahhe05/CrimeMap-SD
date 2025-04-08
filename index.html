@@ -23,7 +23,6 @@
   <!-- Mapbox Geocoder -->
   <link href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.2/mapbox-gl-geocoder.css" rel="stylesheet" />
   <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.2/mapbox-gl-geocoder.min.js"></script>
-
 </head>
 
 <body>
@@ -39,18 +38,15 @@
       </label>
     </div>
   </header>
-  
+
   <main>
-    <!-- TOP BAR -->
     <div id="top-bar">
       <div><strong>Neighborhood:</strong> <span id="neighborhood">Loading...</span></div>
       <div><strong>Street:</strong> <span id="street">Loading...</span></div>
       <div><strong>Time:</strong> <span id="current-time">Loading...</span></div>
     </div>
 
-    <!-- MAIN LAYOUT -->
     <div id="main-layout">
-      <!-- LEFT: Snapshot -->
       <aside id="crime-snapshot">
         <h3>📊 Crime Snapshot</h3>
         <label for="snapshot-range"><strong>View:</strong></label>
@@ -86,41 +82,37 @@
         </div>
       </aside>
 
-      <!-- RIGHT: Map + Route Sidebar -->
-      <section id="map-section">
-        <div id="map-route-wrapper">
-          <!-- Map -->
-          <div id="map-wrapper">
-            <div id="map-container"></div>
-            <div id="map-center-indicator"></div>
-            <button id="reset-location">Reset to My Location</button>
+      <div id="map-wrapper">
+        <div id="map-container"></div>
+        <div id="map-center-indicator"></div>
+        <button id="reset-location">Reset to My Location</button>
+      </div>
+
+      <!-- Route Intelligence Sidebar -->
+      <aside id="route-sidebar">
+        <div id="geocoder-container">
+          <label><strong>Start:</strong></label>
+          <div class="geocoder-with-label">
+              <div id="start-geocoder" class="geocoder"></div>
+              <button id="use-current-location" type="button">Use Current Location</button>
           </div>
+                    
 
-          <!-- Route Intelligence Sidebar -->
-          <div id="route-sidebar">
-            <div id="geocoder-container">
-              <label><strong>Start:</strong></label>
-              <div style="display: flex; gap: 8px; align-items: center;">
-                <div id="start-geocoder" class="geocoder"></div>
-                <button id="use-current-location" type="button">Use Current Location</button>
-              </div>
-                        
+          <label><strong>End:</strong></label>
+          <div id="end-geocoder" class="geocoder"></div>
 
-              <label><strong>End:</strong></label>
-              <div id="end-geocoder" class="geocoder"></div>
-
-              <div class="route-buttons">
-                <button id="analyze-route">Analyze Route</button>
-                <button id="clear-route">Clear Path</button>
-              </div>
-            </div>
-
-            <div id="route-insights">
-              <!-- Crime stats will be injected here -->
-            </div>
+          <div class="route-buttons">
+            <button id="analyze-route">Analyze Route</button>
+            <button id="clear-route">Clear Path</button>
           </div>
         </div>
-      </section>
+
+        <div id="route-insights">
+          <!-- Crime stats will be injected here -->
+        </div>
+      </aside>
+
+
     </div>
   </main>
 

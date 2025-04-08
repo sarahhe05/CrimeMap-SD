@@ -372,10 +372,10 @@ document.getElementById("snapshot-range").addEventListener("change", (e) => {
 // --- ✨ Route Drawing + Buttons ---
 function setupRouteButtons(map) {
   map.addSource('route', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
-  map.addLayer({ id: 'route-line', type: 'line', source: 'route', paint: { 'line-color': '#3887be', 'line-width': 5 } });
+  map.addLayer({ id: 'route-line', type: 'line', source: 'route', paint: { 'line-color': '#2196F3', 'line-width': 5 } });
 
   map.addSource('route-buffer', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
-  map.addLayer({ id: 'route-buffer-fill', type: 'fill', source: 'route-buffer', paint: { 'fill-color': '#f03b20', 'fill-opacity': 0.2 } });
+  map.addLayer({ id: 'route-buffer-fill', type: 'fill', source: 'route-buffer', paint: { 'fill-color': '#2196F3', 'fill-opacity': 0.2 } });
 
   const startGeocoder = new MapboxGeocoder({
     accessToken: mapboxgl.accessToken,

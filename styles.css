@@ -177,7 +177,7 @@ main {
   right: 15px;
   z-index: 1001;
   padding: 10px 14px;
-  background-color: #555;
+  background-color: #777;
   color: #fff;
   border: none;
   border-radius: 5px;
@@ -186,9 +186,13 @@ main {
   box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
+#reset-location:hover {
+  background-color: #555;
+}
+
 /* === Snapshot === */
 #crime-snapshot {
-  flex: 1;
+  flex: 0.4;
   background: #f9f9f9;
   padding: 0.5rem;
   border: 1px solid #ccc;
@@ -354,77 +358,123 @@ body.dark-mode .mapboxgl-popup-content {
   color: #f0f0f0; /* light text */
 }
 
-/* === ROUTE SIDEBAR === */
-#map-route-wrapper {
-  display: flex;
-  height: 100%;
-}
-
+/* === Updated Route Sidebar to Match Snapshot === */
 #route-sidebar {
-  width: 320px;
-  background-color: #ffffff;
-  color: #000000;
-  padding: 1rem;
+  flex: 0.4;
+  background: #f9f9f9;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  min-width: 150px;
+  box-sizing: border-box;
   overflow-y: auto;
-  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.3s, color 0.3s;
-  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
-#geocoder-container {
-  margin-bottom: 1.5rem;
+/* Consistent box styling with .snapshot-box */
+.route-box {
+  flex: 1 1 0;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 0.75rem;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+  overflow: hidden;
+  min-height: 100px;
 }
 
-.geocoder {
-  margin-bottom: 0.75rem;
+.route-box h4 {
+  margin: 0 0 0.25rem 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-#route-insights h3 {
-  margin-top: 0;
+.route-box p {
+  margin: 0;
+  padding: 0.25rem 0;
+  flex-grow: 1;
+  overflow-wrap: break-word;
 }
 
-/* === DARK MODE ROUTE SIDEBAR === */
+/* Dark mode styling */
 body.dark-mode #route-sidebar {
-  background-color: #1e1e1e;
+  background-color: #2b2b2b;
+  border-color: #444;
   color: #f0f0f0;
 }
 
-body.dark-mode .mapboxgl-ctrl-geocoder input {
-  background-color: #2a2a2a;
-  color: #ffffff;
-  border-color: #444;
+body.dark-mode .route-box {
+  background-color: #333;
+  border-color: #555;
+  color: #e0e0e0;
 }
 
-body.dark-mode .mapboxgl-ctrl-geocoder .suggestions {
-  background-color: #2a2a2a;
-  color: #ffffff;
+body.dark-mode .route-box h4 {
+  color: #fff;
 }
 
-body.dark-mode .mapboxgl-ctrl-geocoder .suggestions li {
-  color: #ffffff;
-}
-
-body.dark-mode #route-insights p {
-  color: #cccccc;
-}
-
-.geocoder-with-button {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-#use-current-location {
-  padding: 6px 10px;
-  background-color: #a052d3;
-  color: white;
+#use-current-location, 
+#analyze-route, 
+#clear-route {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  padding: 10px 14px;
   border: none;
-  border-radius: 4px;
+  border-radius: 5px;
   font-weight: bold;
   cursor: pointer;
+  font-size: 0.9rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
   transition: background-color 0.2s ease-in-out;
+}
+
+/* Analyze Route - themed blue */
+#analyze-route {
+  background-color: #36a2eb;
+  color: white;
+}
+
+#analyze-route:hover {
+  background-color: #2196F3;
+}
+
+/* Clear Route - neutral gray */
+#clear-route {
+  background-color: #777;
+  color: white;
+}
+
+#clear-route:hover {
+  background-color: #555;
+}
+
+/* Use Current Location - themed purple */
+#use-current-location {
+  background-color: #a052d3;
+  color: white;
 }
 
 #use-current-location:hover {
   background-color: #8a3ec1;
+}
+
+body.dark-mode #analyze-route {
+  background-color: #2196F3;
+  color: #ffffff;
+}
+
+body.dark-mode #clear-route {
+  background-color: #333;
+}
+
+body.dark-mode #use-current-location {
+  background-color: #7a3cb1;
+  color: #ffffff;
 }
