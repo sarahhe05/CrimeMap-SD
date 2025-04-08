@@ -31,6 +31,11 @@
   --dark-input-bg: #2a2a2a;
 }
 
+h3 {
+  font-size: 1.25rem;
+  margin-top: 0.25rem;
+}
+
 /* === HEADER WITH TOGGLE === */
 header {
   position: relative;
@@ -153,7 +158,6 @@ main {
 
 /* === Map === */
 #map-section {
-  flex: 3;
   min-width: 300px;
 }
 
@@ -225,7 +229,7 @@ main {
 
 /* === Snapshot === */
 #crime-snapshot {
-  flex: 0.4;
+  flex: 0.5;
   background: var(--bg-light);
   padding: 0.5rem;
   border: 1px solid var(--border-light);
@@ -280,7 +284,7 @@ main {
 }
 
 .snapshot-box h4 {
-  margin: 0 0 0.25rem 0;
+  margin: 0 0 0rem 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -393,9 +397,9 @@ body.dark-mode .mapboxgl-popup-content {
 
 /* === Updated Route Sidebar to Match Snapshot === */
 #route-sidebar {
-  flex: 0.4;
+  flex: 0.5;
   background: var(--bg-light);
-  padding: 0.5rem;
+  padding: 1rem;
   border: 1px solid var(--border-light);
   border-radius: 6px;
   font-size: 0.9rem;

@@ -385,12 +385,50 @@ document.getElementById("snapshot-range").addEventListener("change", (e) => {
 
 // --- ✨ Route Drawing + Buttons ---
 function setupRouteButtons(map) {
-  map.addSource('route', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
-  map.addLayer({ id: 'route-line', type: 'line', source: 'route', paint: { 'line-color': '#2196F3', 'line-width': 5 } });
+  // Restore previously typed input values (if available)
+  const startValue = document.querySelector('#start-geocoder input')?.value || '';
+  const endValue = document.querySelector('#end-geocoder input')?.value || '';
 
-  map.addSource('route-buffer', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
-  map.addLayer({ id: 'route-buffer-fill', type: 'fill', source: 'route-buffer', paint: { 'fill-color': '#2196F3', 'fill-opacity': 0.2 } });
+  // Only add sources/layers if not already present
+  if (!map.getSource('route')) {
+    map.addSource('route', {
+      type: 'geojson',
+      data: { type: 'FeatureCollection', features: [] }
+    });
+  }
 
+  if (!map.getLayer('route-line')) {
+    map.addLayer({
+      id: 'route-line',
+      type: 'line',
+      source: 'route',
+      paint: { 'line-color': '#2196F3', 'line-width': 5 }
+    });
+  }
+
+  if (!map.getSource('route-buffer')) {
+    map.addSource('route-buffer', {
+      type: 'geojson',
+      data: { type: 'FeatureCollection', features: [] }
+    });
+  }
+
+  if (!map.getLayer('route-buffer-fill')) {
+    map.addLayer({
+      id: 'route-buffer-fill',
+      type: 'fill',
+      source: 'route-buffer',
+      paint: { 'fill-color': '#2196F3', 'fill-opacity': 0.2 }
+    });
+  }
+
+  // Clear previous geocoder boxes
+  const startContainer = document.getElementById('start-geocoder');
+  const endContainer = document.getElementById('end-geocoder');
+  if (startContainer) startContainer.innerHTML = '';
+  if (endContainer) endContainer.innerHTML = '';
+
+  // Create new geocoder instances
   const startGeocoder = new MapboxGeocoder({
     accessToken: mapboxgl.accessToken,
     mapboxgl,
@@ -401,15 +439,24 @@ function setupRouteButtons(map) {
     mapboxgl,
     placeholder: 'End location'
   });
-  document.getElementById('start-geocoder')?.appendChild(startGeocoder.onAdd(map));
-  document.getElementById('end-geocoder')?.appendChild(endGeocoder.onAdd(map));
 
+  // Attach geocoders
+  startContainer?.appendChild(startGeocoder.onAdd(map));
+  endContainer?.appendChild(endGeocoder.onAdd(map));
+
+  // Restore previous text input (will automatically refire geocode queries)
+  const startInput = document.querySelector('#start-geocoder input');
+  const endInput = document.querySelector('#end-geocoder input');
+  if (startInput && startValue) startGeocoder.setInput(startValue);
+  if (endInput && endValue) endGeocoder.setInput(endValue);
+
+  // Handle "Use Current Location" for start
   document.getElementById('use-current-location')?.addEventListener('click', () => {
     if (!navigator.geolocation) {
       alert("Geolocation not supported by this browser.");
       return;
     }
-  
+
     navigator.geolocation.getCurrentPosition(position => {
       const lng = position.coords.longitude;
       const lat = position.coords.latitude;
@@ -421,11 +468,12 @@ function setupRouteButtons(map) {
       alert("Unable to access your location.");
     });
   });
-  
 
+  // Update start/end coordinates when selected
   startGeocoder.on('result', e => { startCoord = e.result.geometry.coordinates; });
   endGeocoder.on('result', e => { endCoord = e.result.geometry.coordinates; });
 
+  // Analyze route button
   document.getElementById('analyze-route')?.addEventListener('click', () => {
     if (!startCoord || !endCoord) {
       alert('Please select both a start and end location.');
@@ -434,21 +482,28 @@ function setupRouteButtons(map) {
     getRoute(map, { lng: startCoord[0], lat: startCoord[1] }, { lng: endCoord[0], lat: endCoord[1] });
   });
 
+  // Clear route & inputs
   document.getElementById('clear-route')?.addEventListener('click', () => {
     startCoord = null;
     endCoord = null;
 
     document.getElementById('route-insights').innerHTML = '';
 
+    // Clear route + buffer data
     map.getSource('route')?.setData({ type: 'FeatureCollection', features: [] });
     map.getSource('route-buffer')?.setData({ type: 'FeatureCollection', features: [] });
 
+    // Clear input fields
     const startInput = document.querySelector('#start-geocoder input');
     const endInput = document.querySelector('#end-geocoder input');
     if (startInput) startInput.value = '';
     if (endInput) endInput.value = '';
+
+    // Also clear the geocoder markers on the map
+    document.querySelectorAll('.mapboxgl-marker').forEach(marker => marker.remove());
   });
 }
+
 
 async function getRoute(map, start, end) {
   const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${start.lng},${start.lat};${end.lng},${end.lat}?geometries=geojson&access_token=${mapboxgl.accessToken}`;
@@ -500,7 +555,7 @@ function summarizeCrimes(crimes) {
 function showInsights(summary) {
   const container = document.getElementById('route-insights');
   if (!container) return;
-  container.innerHTML = `<h3>${summary.total} crimes along this route in the last ${document.getElementById("snapshot-range").value} days</h3>`;
+  container.innerHTML = `<h4>${summary.total} crimes along this route in the last ${document.getElementById("snapshot-range").value} days</h4>`;
   Object.entries(summary.categories).forEach(([type, count]) => {
     const p = document.createElement('p');
     p.textContent = `${type}: ${count}`;
