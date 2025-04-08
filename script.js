@@ -1,94 +1,14 @@
 mapboxgl.accessToken = 'pk.eyJ1Ijoic2FyYWhoZTA1IiwiYSI6ImNtN2NxdDR2djA3OTIycnB0OXNyenRmaW8ifQ.MIoVxDMYrSy-nm4YY2K-3A';
 
-let tooltipBound = false;
-
-function setupCrimeTooltip(map) {
-  if (tooltipBound) return;
-  tooltipBound = true;
-
-  const popup = new mapboxgl.Popup({
-    closeButton: false,
-    closeOnClick: false
-  });
-
-  map.on('mouseenter', 'nearby-points', (e) => {
-    map.getCanvas().style.cursor = 'pointer';
-    const { pd_offense_category, code_section, occurred_on, block_addr } = e.features[0].properties;
-    popup.setLngLat(e.lngLat).setHTML(`
-      <strong>Category:</strong> ${pd_offense_category}<br>
-      <strong>Code:</strong> ${code_section}<br>
-      <strong>Occurred on:</strong> ${occurred_on}<br>
-      <strong>Address:</strong> ${block_addr}
-    `).addTo(map);
-  });
-
-  map.on('mouseleave', 'nearby-points', () => {
-    map.getCanvas().style.cursor = '';
-    popup.remove();
-  });
-}
-
-const toggle = document.getElementById('mode-toggle');
-toggle.addEventListener('change', () => {
-  const isDark = toggle.checked;
-  document.body.classList.toggle('dark-mode', isDark);
-
-  if (!window.currentMap) return;
-
-  const styleUrl = isDark
-    ? 'mapbox://styles/mapbox/navigation-night-v1'
-    : 'mapbox://styles/mapbox/navigation-day-v1';
-
-  const center = window.currentMap.getCenter();
-
-  window.currentMap.setStyle(styleUrl);
-
-  window.currentMap.once('styledata', () => {
-    window.currentMap.on('idle', () => removeTrafficLayers(window.currentMap));
-
-    window.currentMap.addSource('crimes', {
-      type: 'geojson',
-      data: toGeoJSON(filterCrimes([center.lng, center.lat]))
-    });
-
-    window.currentMap.addLayer({
-      id: 'nearby-points',
-      type: 'circle',
-      source: 'crimes',
-      paint: {
-        'circle-color': '#FF0000',
-        'circle-radius': 6,
-        'circle-opacity': 0.65
-      }
-    });
-
-    setupCrimeTooltip(window.currentMap);
-
-    updateLocationLabels(center.lng, center.lat);
-    updateCrimeSnapshotPanel(parseInt(document.getElementById("snapshot-range").value));
-  });
-});
-
-function removeTrafficLayers(map) {
-  const layers = map.getStyle().layers;
-  layers.forEach(layer => {
-    const paint = layer.paint || {};
-    if (
-      layer.type === 'line' &&
-      paint['line-color'] &&
-      /traffic/i.test(layer.id)
-    ) {
-      map.setPaintProperty(layer.id, 'line-opacity', 0);
-    }
-  });
-}
-
 const MAPBOX_GEOCODING_URL = 'https://api.mapbox.com/geocoding/v5/mapbox.places/';
 const EARTH_RADIUS_KM = 6371;
+
 let allCrimeData = [];
 let userLocation = null;
 let followUser = true;
+let tooltipBound = false;
 
+// --- 📌 Utility Functions ---
 function getDistanceKm(lat1, lon1, lat2, lon2) {
   const dLat = (lat2 - lat1) * Math.PI / 180;
   const dLon = (lon2 - lon1) * Math.PI / 180;
@@ -221,28 +141,7 @@ function updateCrimeSnapshotPanel(days = 30) {
   });
 }
 
-function updateCurrentTime() {
-  document.getElementById("current-time").textContent = new Date().toLocaleString();
-}
-setInterval(updateCurrentTime, 1000);
-updateCurrentTime();
-
-function updateLocationLabels(lng, lat) {
-  const url = `${MAPBOX_GEOCODING_URL}${lng},${lat}.json?access_token=${mapboxgl.accessToken}`;
-  fetch(url)
-    .then(res => res.json())
-    .then(data => {
-      let neighborhood = 'Unavailable';
-      let street = 'Unavailable';
-      for (const feature of data.features) {
-        if (feature.place_type.includes('neighborhood')) neighborhood = feature.text;
-        if (feature.place_type.includes('address') || feature.place_type.includes('street')) street = feature.place_name;
-      }
-      document.getElementById('neighborhood').textContent = neighborhood;
-      document.getElementById('street').textContent = street;
-    });
-}
-
+// --- 🗺️ Map Setup ---
 function initMap(centerCoords = [-117.1611, 32.7157]) {
   const map = new mapboxgl.Map({
     container: 'map-container',
@@ -294,7 +193,6 @@ function initMap(centerCoords = [-117.1611, 32.7157]) {
         });
 
         setupCrimeTooltip(map);
-
         updateMapSource(map, centerCoords);
         updateLocationLabels(centerCoords[0], centerCoords[1]);
         updateCrimeSnapshotPanel(parseInt(document.getElementById("snapshot-range").value));
@@ -310,16 +208,46 @@ function initMap(centerCoords = [-117.1611, 32.7157]) {
   });
 }
 
+// --- 📍 Tooltip ---
+function setupCrimeTooltip(map) {
+  if (tooltipBound) return;
+  tooltipBound = true;
+
+  const popup = new mapboxgl.Popup({
+    closeButton: false,
+    closeOnClick: false,
+    anchor: 'top',
+    offset: 15
+  });
+
+  map.on('mouseenter', 'nearby-points', (e) => {
+    map.getCanvas().style.cursor = 'pointer';
+    const { pd_offense_category, code_section, occurred_on, block_addr } = e.features[0].properties;
+    popup.setLngLat(e.lngLat).setHTML(`
+      <strong>Category:</strong> ${pd_offense_category}<br>
+      <strong>Code:</strong> ${code_section}<br>
+      <strong>Occurred on:</strong> ${occurred_on}<br>
+      <strong>Address:</strong> ${block_addr}
+    `).addTo(map);
+  });
+
+  map.on('mouseleave', 'nearby-points', () => {
+    map.getCanvas().style.cursor = '';
+    popup.remove();
+  });
+}
+
+// --- 🧭 GPS Tracking ---
 if (navigator.geolocation) {
   navigator.geolocation.watchPosition(
     (position) => {
       const userCoords = [position.coords.longitude, position.coords.latitude];
+      userLocation = userCoords;
+
       if (!window.mapInitialized) {
-        userLocation = userCoords;
         initMap(userCoords);
         window.mapInitialized = true;
       } else {
-        userLocation = userCoords;
         if (window.userMarker) window.userMarker.setLngLat(userCoords);
         if (followUser && window.currentMap) {
           window.currentMap.flyTo({
@@ -343,6 +271,7 @@ if (navigator.geolocation) {
   );
 }
 
+// --- 🎯 Location Reset Button ---
 document.getElementById("reset-location").addEventListener("click", () => {
   if (userLocation && window.currentMap) {
     followUser = true;
@@ -356,6 +285,83 @@ document.getElementById("reset-location").addEventListener("click", () => {
   }
 });
 
+// --- ⏱️ Current Time ---
+function updateCurrentTime() {
+  document.getElementById("current-time").textContent = new Date().toLocaleString();
+}
+setInterval(updateCurrentTime, 1000);
+updateCurrentTime();
+
+// --- 🧠 Location Labels ---
+function updateLocationLabels(lng, lat) {
+  const url = `${MAPBOX_GEOCODING_URL}${lng},${lat}.json?access_token=${mapboxgl.accessToken}`;
+  fetch(url)
+    .then(res => res.json())
+    .then(data => {
+      let neighborhood = 'Unavailable';
+      let street = 'Unavailable';
+      for (const feature of data.features) {
+        if (feature.place_type.includes('neighborhood')) neighborhood = feature.text;
+        if (feature.place_type.includes('address') || feature.place_type.includes('street')) street = feature.place_name;
+      }
+      document.getElementById('neighborhood').textContent = neighborhood;
+      document.getElementById('street').textContent = street;
+    });
+}
+
+// --- 🚦 Remove Traffic Color Layers ---
+function removeTrafficLayers(map) {
+  const layers = map.getStyle().layers;
+  layers.forEach(layer => {
+    const paint = layer.paint || {};
+    if (layer.type === 'line' && paint['line-color'] && /traffic/i.test(layer.id)) {
+      map.setPaintProperty(layer.id, 'line-opacity', 0);
+    }
+  });
+}
+
+// --- 🌗 Dark Mode ---
+const toggle = document.getElementById('mode-toggle');
+toggle.addEventListener('change', () => {
+  const isDark = toggle.checked;
+  document.body.classList.toggle('dark-mode', isDark);
+
+  if (!window.currentMap) return;
+
+  const styleUrl = isDark
+    ? 'mapbox://styles/mapbox/navigation-night-v1'
+    : 'mapbox://styles/mapbox/navigation-day-v1';
+
+  const center = window.currentMap.getCenter();
+
+  window.currentMap.setStyle(styleUrl);
+
+  window.currentMap.once('styledata', () => {
+    window.currentMap.on('idle', () => removeTrafficLayers(window.currentMap));
+
+    window.currentMap.addSource('crimes', {
+      type: 'geojson',
+      data: toGeoJSON(filterCrimes([center.lng, center.lat]))
+    });
+
+    window.currentMap.addLayer({
+      id: 'nearby-points',
+      type: 'circle',
+      source: 'crimes',
+      paint: {
+        'circle-color': '#FF0000',
+        'circle-radius': 6,
+        'circle-opacity': 0.65
+      }
+    });
+
+    setupCrimeTooltip(window.currentMap);
+    updateLocationLabels(center.lng, center.lat);
+    updateCrimeSnapshotPanel(parseInt(document.getElementById("snapshot-range").value));
+  });
+});
+
+// --- 📊 Snapshot Range ---
 document.getElementById("snapshot-range").addEventListener("change", (e) => {
   updateCrimeSnapshotPanel(parseInt(e.target.value));
 });
