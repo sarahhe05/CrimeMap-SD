@@ -336,7 +336,11 @@ toggle.addEventListener('change', () => {
     : 'mapbox://styles/mapbox/navigation-day-v1';
 
   const center = window.currentMap.getCenter();
-
+  
+  // Store current route + buffer GeoJSON before style reset
+  const existingRoute = window.currentMap.getSource('route')?._data;
+  const existingBuffer = window.currentMap.getSource('route-buffer')?._data;
+  
   window.currentMap.setStyle(styleUrl);
 
   window.currentMap.once('styledata', () => {
@@ -361,6 +365,16 @@ toggle.addEventListener('change', () => {
     setupCrimeTooltip(window.currentMap);
     updateLocationLabels(center.lng, center.lat);
     updateCrimeSnapshotPanel(parseInt(document.getElementById("snapshot-range").value));
+
+    setupRouteButtons(window.currentMap);
+
+    // Restore route and buffer if they existed
+    if (existingRoute && existingBuffer) {
+      window.currentMap.getSource('route')?.setData(existingRoute);
+      window.currentMap.getSource('route-buffer')?.setData(existingBuffer);
+    }
+
+
   });
 });
 
