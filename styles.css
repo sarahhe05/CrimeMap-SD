@@ -1,7 +1,40 @@
+:root {
+  --white: #ffffff;
+  --gray-dark: #333;
+  --blue: #2196F3;
+  --blue-light: #36a2eb;
+  --purple: #a052d3;
+  --purple-hover: #8a3ec1;
+  --gray: #777;
+  --gray-hover: #555;
+  --bg-light: #f9f9f9;
+  --border-light: #ccc;
+  --black: #000000;
+  --marker-purple: #800080;
+  --positive-bg: #e6f5e6;
+  --positive-text: #1a6f1a;
+  --negative-bg: #fce6e6;
+  --negative-text: #9b1c1c;
+  --dark-bg: #1c1c1c;
+  --light-text: #e0e0e0;
+  --dark-header: #111;
+  --dark-bar: #2a2a2a;
+  --dark-border: #444;
+  --dark-panel: #2b2b2b;
+  --dark-positive-bg: #264d26;
+  --dark-positive-text: #c3f8c3;
+  --dark-negative-bg: #5c1c1c;
+  --dark-negative-text: #ffb3b3;
+  --dark-popup-bg: #1e1e1e;
+  --light-gray: #f0f0f0;
+  --dark-purple: #7a3cb1;
+  --dark-input-bg: #2a2a2a;
+}
+
 /* === HEADER WITH TOGGLE === */
 header {
   position: relative;
-  background-color: #333;
+  background-color: var(--gray-dark);
   color: white;
   padding: 0.25rem 1rem;
   height: 3.5rem;
@@ -47,7 +80,7 @@ header {
   cursor: pointer;
   top: 0; left: 0;
   right: 0; bottom: 0;
-  background-color: #ccc;
+  background-color: var(--border-light);
   transition: 0.3s;
   border-radius: 34px;
 }
@@ -65,7 +98,7 @@ header {
 }
 
 input:checked + .slider {
-  background-color: #2196F3;
+  background-color: var(--blue);
 }
 
 input:checked + .slider:before {
@@ -77,12 +110,12 @@ body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
-  background-color: #ffffff;
-  color: #333;
+  background-color: var(--white);
+  color: var(--gray-dark);
 }
 
 header {
-  background-color: #333;
+  background-color: var(--gray-dark);
   color: white;
   padding: 0.1rem;
   text-align: center;
@@ -98,7 +131,7 @@ main {
   justify-content: space-between;
   background-color: #f4f4f4;
   padding: 0.5rem;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-light);
   font-size: 0.95rem;
   border-radius: 6px;
   margin-bottom: 1rem;
@@ -133,7 +166,7 @@ main {
 #map-container {
   width: 100%;
   height: 100%;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-light);
   border-radius: 6px;
 }
 
@@ -152,7 +185,7 @@ main {
 #map-center-indicator::after {
   content: '';
   position: absolute;
-  background-color: #800080; /* Purple marker */
+  background-color: var(--marker-purple); /* Purple marker */
 }
 
 #map-center-indicator::before {
@@ -177,8 +210,8 @@ main {
   right: 15px;
   z-index: 1001;
   padding: 10px 14px;
-  background-color: #777;
-  color: #fff;
+  background-color: var(--gray);
+  color: var(--white);
   border: none;
   border-radius: 5px;
   font-weight: bold;
@@ -187,15 +220,15 @@ main {
 }
 
 #reset-location:hover {
-  background-color: #555;
+  background-color: var(--gray-hover);
 }
 
 /* === Snapshot === */
 #crime-snapshot {
   flex: 0.4;
-  background: #f9f9f9;
+  background: var(--bg-light);
   padding: 0.5rem;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-light);
   border-radius: 6px;
   font-size: 0.9rem;
   min-width: 250px;
@@ -234,10 +267,10 @@ main {
 
 .snapshot-box {
   flex: 1 1 0;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-light);
   border-radius: 8px;
   padding: 0.75rem;
-  background: #fff;
+  background: var(--white);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -275,8 +308,8 @@ main {
 
 /* === Trend Tags === */
 .trend-box.positive {
-  background-color: #e6f5e6;
-  color: #1a6f1a;
+  background-color: var(--positive-bg);
+  color: var(--positive-text);
   padding: 4px 8px;
   border-radius: 5px;
   font-weight: bold;
@@ -284,8 +317,8 @@ main {
 }
 
 .trend-box.negative {
-  background-color: #fce6e6;
-  color: #9b1c1c;
+  background-color: var(--negative-bg);
+  color: var(--negative-text);
   padding: 4px 8px;
   border-radius: 5px;
   font-weight: bold;
@@ -294,53 +327,53 @@ main {
 
 /* === DARK MODE OVERRIDES === */
 body.dark-mode {
-  background-color: #1c1c1c;
-  color: #e0e0e0;
+  background-color: var(--dark-bg);
+  color: var(--light-text);
 }
 
 body.dark-mode header {
-  background-color: #111;
+  background-color: var(--dark-header);
 }
 
 body.dark-mode #top-bar {
-  background-color: #2a2a2a;
-  border-color: #444;
-  color: #f0f0f0;
+  background-color: var(--dark-input-bg);
+  border-color: var(--dark-border);
+  color: var(--light-gray);
 }
 
 body.dark-mode #crime-snapshot {
-  background-color: #2b2b2b;
-  border-color: #444;
-  color: #f0f0f0;
+  background-color: var(--dark-panel);
+  border-color: var(--dark-border);
+  color: var(--light-gray);
 }
 
 body.dark-mode .snapshot-box {
-  background-color: #333;
-  border-color: #555;
-  color: #e0e0e0;
+  background-color: var(--gray-dark);
+  border-color: var(--gray-hover);
+  color: var(--light-text);
 }
 
 body.dark-mode .snapshot-box h4 {
-  color: #fff;
+  color: var(--white);
 }
 
 body.dark-mode #map-container {
-  border-color: #444;
+  border-color: var(--dark-border);
 }
 
 body.dark-mode #reset-location {
-  background-color: #333;
+  background-color: var(--gray-dark);
   border: 1px solid #666;
 }
 
 body.dark-mode .trend-box.positive {
-  background-color: #264d26;
-  color: #c3f8c3;
+  background-color: var(--dark-positive-bg);
+  color: var(--dark-positive-text);
 }
 
 body.dark-mode .trend-box.negative {
-  background-color: #5c1c1c;
-  color: #ffb3b3;
+  background-color: var(--dark-negative-bg);
+  color: var(--dark-negative-text);
 }
 
 .mapboxgl-popup-content {
@@ -349,21 +382,21 @@ body.dark-mode .trend-box.negative {
   padding: 10px;
   border-radius: 8px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-  background-color: #ffffff;
-  color: #000000;
+  background-color: var(--white);
+  color: var(--black);
 }
 
 body.dark-mode .mapboxgl-popup-content {
-  background-color: #1e1e1e; /* dark background */
-  color: #f0f0f0; /* light text */
+  background-color: var(--dark-popup-bg); /* dark background */
+  color: var(--light-gray); /* light text */
 }
 
 /* === Updated Route Sidebar to Match Snapshot === */
 #route-sidebar {
   flex: 0.4;
-  background: #f9f9f9;
+  background: var(--bg-light);
   padding: 0.5rem;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-light);
   border-radius: 6px;
   font-size: 0.9rem;
   min-width: 150px;
@@ -377,10 +410,10 @@ body.dark-mode .mapboxgl-popup-content {
 /* Consistent box styling with .snapshot-box */
 .route-box {
   flex: 1 1 0;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-light);
   border-radius: 8px;
   padding: 0.75rem;
-  background: #fff;
+  background: var(--white);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -403,21 +436,27 @@ body.dark-mode .mapboxgl-popup-content {
   overflow-wrap: break-word;
 }
 
+.geocoder-label {
+  display: block;
+  margin-bottom: 0.4rem; /* Adjust the spacing here */
+  font-size: 0.9rem;
+}
+
 /* Dark mode styling */
 body.dark-mode #route-sidebar {
-  background-color: #2b2b2b;
-  border-color: #444;
-  color: #f0f0f0;
+  background-color: var(--dark-panel);
+  border-color: var(--dark-border);
+  color: var(--light-gray);
 }
 
 body.dark-mode .route-box {
-  background-color: #333;
-  border-color: #555;
-  color: #e0e0e0;
+  background-color: var(--gray-dark);
+  border-color: var(--gray-hover);
+  color: var(--light-text);
 }
 
 body.dark-mode .route-box h4 {
-  color: #fff;
+  color: var(--white);
 }
 
 #use-current-location, 
@@ -437,44 +476,60 @@ body.dark-mode .route-box h4 {
 
 /* Analyze Route - themed blue */
 #analyze-route {
-  background-color: #36a2eb;
+  background-color: var(--blue-light);
   color: white;
 }
 
 #analyze-route:hover {
-  background-color: #2196F3;
+  background-color: var(--blue);
 }
 
 /* Clear Route - neutral gray */
 #clear-route {
-  background-color: #777;
+  background-color: var(--gray);
   color: white;
 }
 
 #clear-route:hover {
-  background-color: #555;
+  background-color: var(--gray-hover);
 }
 
 /* Use Current Location - themed purple */
 #use-current-location {
-  background-color: #a052d3;
+  background-color: var(--purple);
   color: white;
 }
 
 #use-current-location:hover {
-  background-color: #8a3ec1;
+  background-color: var(--purple-hover);
 }
 
 body.dark-mode #analyze-route {
-  background-color: #2196F3;
-  color: #ffffff;
+  background-color: var(--blue);
+  color: var(--white);
 }
 
 body.dark-mode #clear-route {
-  background-color: #333;
+  background-color: var(--gray-dark);
 }
 
 body.dark-mode #use-current-location {
-  background-color: #7a3cb1;
-  color: #ffffff;
+  background-color: var(--dark-purple);
+  color: var(--white);
+}
+
+body.dark-mode #reset-location:hover {
+  background-color: var(--gray-hover);
+}
+
+body.dark-mode #analyze-route:hover {
+  background-color: var(--blue-light);
+}
+
+body.dark-mode #use-current-location:hover {
+  background-color: var(--purple);
+}
+
+body.dark-mode #clear-route:hover {
+  background-color: var(--gray-hover);
 }

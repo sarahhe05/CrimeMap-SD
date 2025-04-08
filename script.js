@@ -464,17 +464,29 @@ function analyzeCrimes(bufferPolygon) {
 
 function summarizeCrimes(crimes) {
   const stats = { total: crimes.length, categories: {} };
+
+  // Count all categories
   crimes.forEach(crime => {
     const type = crime.pd_offense_category || "Unknown";
     stats.categories[type] = (stats.categories[type] || 0) + 1;
   });
+
+  // Sort and keep top 3 categories
+  const sortedEntries = Object.entries(stats.categories)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3);
+
+  // Convert back to object
+  stats.categories = Object.fromEntries(sortedEntries);
+
   return stats;
 }
+
 
 function showInsights(summary) {
   const container = document.getElementById('route-insights');
   if (!container) return;
-  container.innerHTML = `<h3>${summary.total} crimes along this route</h3>`;
+  container.innerHTML = `<h3>${summary.total} crimes along this route in the last ${document.getElementById("snapshot-range").value} days</h3>`;
   Object.entries(summary.categories).forEach(([type, count]) => {
     const p = document.createElement('p');
     p.textContent = `${type}: ${count}`;
