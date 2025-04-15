@@ -31,6 +31,29 @@
   --dark-input-bg: #2a2a2a;
 }
 
+@media (max-width: 900px) {
+  #main-layout {
+    flex-direction: column;
+    height: auto;
+  }
+
+  #crime-snapshot,
+  #route-sidebar {
+    min-width: 100%;
+    width: 100%;
+    flex: none;
+  }
+
+  #map-section {
+    width: 100%;
+    min-height: 300px;
+  }
+
+  #map-container {
+    height: 400px; /* or adjust based on your design */
+  }
+}
+
 h3 {
   font-size: 1.25rem;
   margin-top: 0.25rem;
